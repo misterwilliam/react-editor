@@ -1,4 +1,7 @@
 npm-debug.log
 
+# Ignore source map which is only created for development purposes
+dist.js.map
+
 # Dependency directory
 node_modules
