@@ -6,12 +6,17 @@ var ReactDOM = require('react-dom');
 // $FlowIgnore: Flow can't find this module
 var basscss = require('basscss/css/basscss.css');
 
+var Editor = require('./editor.react');
+
 var App = React.createClass({
 
   render: function() {
     return (
-      <div className="border flex">
-        hi
+      <div className="m4">
+        <h1>A Very Nice Editor</h1>
+        <div className="border">
+          <Editor />
+        </div>
       </div>
     )
   }
