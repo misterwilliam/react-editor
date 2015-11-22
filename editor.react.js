@@ -17,7 +17,7 @@ var ContentEditable = React.createClass({
 
   render: function(): ?ReactElement {
     return (
-      <div ref="contenteditable"
+      <div ref="this"
            contentEditable={true}
            style={{
              maxHeight: 100,
@@ -35,13 +35,13 @@ var ContentEditable = React.createClass({
   componentDidUpdate: function() {
     // React's VDIFF algorithm does not reliably do updates on contenteditable components.
     // So we have to force an update.
-    if (this.props.sanitizedHtml !== this.refs.contenteditable.innerHTML) {
-      this.refs.contenteditable.innerHTML = this.props.sanitizedHtml;
+    if (this.props.sanitizedHtml !== this.refs.this.innerHTML) {
+      this.refs.this.innerHTML = this.props.sanitizedHtml;
     }
   },
 
   emitChange: function(event: SyntheticEvent) {
-    var html = this.refs.contenteditable.innerHTML;
+    var html = this.refs.this.innerHTML;
     if (this.props.onChange) {
       this.props.onChange(html);
     }
