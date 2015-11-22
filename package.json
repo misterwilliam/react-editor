@@ -26,6 +26,8 @@
     "babel-preset-react": "^6.1.18",
     "basscss": "^7.0.4",
     "css-loader": "^0.23.0",
+    "json-loader": "^0.5.3",
+    "sanitize-html": "^1.11.1",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.8"
   }

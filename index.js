@@ -14,7 +14,7 @@ var App = React.createClass({
     return (
       <div className="m4">
         <h1>A Very Nice Editor</h1>
-        <div className="border">
+        <div>
           <Editor />
         </div>
       </div>

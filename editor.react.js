@@ -2,6 +2,8 @@
 
 var React = require('react');
 
+var sanitizer = require('./sanitizer');
+
 var ContentEditable = React.createClass({
 
   propTypes: {
@@ -58,11 +60,16 @@ var Editor = React.createClass({
 
   render: function(): ?ReactElement {
     return (
-      <div>
+      <div className="flex border">
         <ContentEditable ref="contenteditable"
                          sanitizedHtml={this.state.sanitizedHtml}
                          onChange={this.handleChange} />
-        <div>
+        <div className="border"
+             style={{
+                width: 400,
+                maxWidth: 400,
+              }}>
+          <div className="h1 bold">Debug Panel</div>
           Data: {this.state.sanitizedHtml}
         </div>
       </div>
@@ -71,7 +78,7 @@ var Editor = React.createClass({
 
   handleChange: function(html: Object) {
     this.setState({
-      sanitizedHtml: html + " derp",
+      sanitizedHtml: sanitizer.Sanitize(html),
     });
     this.refs.contenteditable.forceUpdate();
   }
