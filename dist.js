@@ -20504,6 +20504,11 @@
 	var ContentEditable = React.createClass({
 	  displayName: "ContentEditable",
 	
+	  propTypes: {
+	    sanitizedHtml: React.PropTypes.node.isRequired,
+	    onChange: React.PropTypes.func
+	  },
+	
 	  // Never update automatically. Editor component completely controls when to update this
 	  // component.
 	  shouldComponentUpdate: function shouldComponentUpdate() {
@@ -20534,7 +20539,9 @@
 	
 	  emitChange: function emitChange(event) {
 	    var html = this.refs.contenteditable.innerHTML;
-	    this.props.onChange(html);
+	    if (this.props.onChange) {
+	      this.props.onChange(html);
+	    }
 	  }
 	});
 	

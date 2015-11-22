@@ -4,6 +4,11 @@ var React = require('react');
 
 var ContentEditable = React.createClass({
 
+  propTypes: {
+    sanitizedHtml: React.PropTypes.node.isRequired,
+    onChange: React.PropTypes.func,
+  },
+
   // Never update automatically. Editor component completely controls when to update this
   // component.
   shouldComponentUpdate: function() {
@@ -37,7 +42,9 @@ var ContentEditable = React.createClass({
 
   emitChange: function(event: SyntheticEvent) {
     var html = this.refs.contenteditable.innerHTML;
-    this.props.onChange(html)
+    if (this.props.onChange) {
+      this.props.onChange(html);
+    }
   }
 });
 
