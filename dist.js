@@ -20521,9 +20521,9 @@
 	    return React.createElement('div', { ref: 'this',
 	      contentEditable: true,
 	      style: {
-	        maxHeight: 100,
 	        outline: "none", // Disable onfocus highlighting
-	        width: "100%",
+	        width: this.props.width,
+	        height: this.props.height,
 	        overflowY: "auto"
 	      },
 	      onInput: this.emitChange,
@@ -20557,13 +20557,16 @@
 	  },
 	
 	  render: function render() {
-	    return React.createElement('div', { className: 'flex border' }, React.createElement(ContentEditable, { ref: 'contenteditable',
+	    return React.createElement('div', { className: 'flex' }, React.createElement('div', { className: 'p1 border' }, React.createElement(ContentEditable, { ref: 'contenteditable',
+	      width: 600,
+	      height: 800,
 	      sanitizedHtml: this.state.sanitizedHtml,
-	      onChange: this.handleChange }), React.createElement('div', { className: 'border',
+	      onChange: this.handleChange })), React.createElement('div', { className: 'ml4 flex flex-column' }, React.createElement('div', { className: 'h1 bold' }, 'Debug Panel'), React.createElement('div', { className: 'flex-auto p1 border',
 	      style: {
 	        width: 400,
-	        maxWidth: 400
-	      } }, React.createElement('div', { className: 'h1 bold' }, 'Debug Panel'), 'Data: ', this.state.sanitizedHtml));
+	        fontFamily: "courier, monospace",
+	        fontSize: 12
+	      } }, React.createElement('div', { className: 'bold' }, 'Data'), React.createElement('div', null, this.state.sanitizedHtml))));
 	  },
 	
 	  handleChange: function handleChange(html) {

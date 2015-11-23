@@ -22,9 +22,9 @@ var ContentEditable = React.createClass({
       <div ref="this"
            contentEditable={true}
            style={{
-             maxHeight: 100,
              outline: "none",  // Disable onfocus highlighting
-             width: "100%",
+             width: this.props.width,
+             height: this.props.height,
              overflowY: "auto"
            }}
            onInput={this.emitChange}
@@ -60,23 +60,33 @@ var Editor = React.createClass({
 
   render: function(): ?ReactElement {
     return (
-      <div className="flex border">
-        <ContentEditable ref="contenteditable"
-                         sanitizedHtml={this.state.sanitizedHtml}
-                         onChange={this.handleChange} />
-        <div className="border"
-             style={{
-                width: 400,
-                maxWidth: 400,
-              }}>
+      <div className="flex">
+        <div className="p1 border">
+          <ContentEditable ref="contenteditable"
+                           width={600}
+                           height={800}
+                           sanitizedHtml={this.state.sanitizedHtml}
+                           onChange={this.handleChange} />
+        </div>
+        <div className="ml4 flex flex-column">
           <div className="h1 bold">Debug Panel</div>
-          Data: {this.state.sanitizedHtml}
+          <div className="flex-auto p1 border"
+               style={{
+                width: 400,
+                fontFamily: "courier, monospace",
+                fontSize: 12,
+               }}>
+            <div className="bold">Data</div>
+            <div>
+              {this.state.sanitizedHtml}
+            </div>
+          </div>
         </div>
       </div>
     );
   },
 
-  handleChange: function(html: Object) {
+  handleChange: function(html: string) {
     this.setState({
       sanitizedHtml: sanitizer.Sanitize(html),
     });
