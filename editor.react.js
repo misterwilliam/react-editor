@@ -1,23 +1,28 @@
 /* @flow */
 
+var Rangy = require('rangy');
+var RangySelectionSaveRestore = require('rangy/lib/rangy-selectionsaverestore');
+var RangyTextRange = require('rangy/lib/rangy-textrange');
 var React = require('react');
 
 var sanitizer = require('./sanitizer');
 
+
 var ContentEditable = React.createClass({
+
+  rangyCursorPosition: null,
 
   propTypes: {
     sanitizedHtml: React.PropTypes.node.isRequired,
     onChange: React.PropTypes.func,
   },
 
-  // Never update automatically. Editor component completely controls when to update this
-  // component.
-  shouldComponentUpdate: function() {
-    return false;
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return nextProps.sanitizedHtml !== this.refs.this.innerHTML;
   },
 
   render: function(): ?ReactElement {
+    this.saveCursorPosition();
     return (
       <div ref="this"
            contentEditable={true}
@@ -28,8 +33,10 @@ var ContentEditable = React.createClass({
              overflowY: "auto"
            }}
            onInput={this.emitChange}
-           onBlur={this.emitChange}
-           dangerouslySetInnerHTML={{__html: this.props.sanitizedHtml}} >
+           onBlur={this.emitChange} >
+         {/* dangerouslySetInnerHTML={{__html: this.props.sanitizedHtml}}
+             is unnecessary because we are doing it manually inside of
+             componentDidUpdate */}
       </div>
     )
   },
@@ -39,6 +46,23 @@ var ContentEditable = React.createClass({
     // So we have to force an update.
     if (this.props.sanitizedHtml !== this.refs.this.innerHTML) {
       this.refs.this.innerHTML = this.props.sanitizedHtml;
+    }
+    this.restoreCursorPosition();
+  },
+
+  saveCursorPosition: function() {
+    if (Rangy.initialized) {
+      var rangySelection = Rangy.getSelection();
+      this.rangyCursorPosition = rangySelection.saveCharacterRanges(this.refs.this);
+    }
+  },
+
+  restoreCursorPosition: function() {
+    if (this.rangyCursorPosition != null) {
+      var rangySelection = Rangy.getSelection();
+      var innerText = Rangy.innerText(this.refs.this);
+      rangySelection.restoreCharacterRanges(this.refs.this, this.rangyCursorPosition);
+      this.rangyCursorPosition = null;
     }
   },
 
@@ -54,7 +78,7 @@ var Editor = React.createClass({
 
   getInitialState: function() {
     return {
-      sanitizedHtml: "",
+      sanitizedHtml: "<div></div>",
     }
   },
 
@@ -64,7 +88,7 @@ var Editor = React.createClass({
         <div className="p1 border">
           <ContentEditable ref="contenteditable"
                            width={600}
-                           height={800}
+                           height={500}
                            sanitizedHtml={this.state.sanitizedHtml}
                            onChange={this.handleChange} />
         </div>
@@ -80,6 +104,10 @@ var Editor = React.createClass({
             <div>
               {this.state.sanitizedHtml}
             </div>
+            <div className="bold">Presanitized HTML</div>
+            <div>
+              {this.state.preSanitizedHtml}
+            </div>
           </div>
         </div>
       </div>
@@ -87,10 +115,15 @@ var Editor = React.createClass({
   },
 
   handleChange: function(html: string) {
+    // Ensure that there is always at least some content inside ContentEditable. Restore
+    // cursor position does not work properly if the contenteditable is completely empty.
+    if (html.substr(0, 5) != "<div>") {
+      html = "<div>"+ html + "</div>";
+    }
     this.setState({
+      preSanitizedHtml: html,
       sanitizedHtml: sanitizer.Sanitize(html),
     });
-    this.refs.contenteditable.forceUpdate();
   }
 });
 
