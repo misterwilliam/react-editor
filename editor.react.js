@@ -1,78 +1,11 @@
 /* @flow */
 
-var Rangy = require('rangy');
-var RangySelectionSaveRestore = require('rangy/lib/rangy-selectionsaverestore');
-var RangyTextRange = require('rangy/lib/rangy-textrange');
 var React = require('react');
 
 var sanitizer = require('./sanitizer');
 
+var ContentEditable = require('./contenteditable.react');
 
-var ContentEditable = React.createClass({
-
-  rangyCursorPosition: null,
-
-  propTypes: {
-    sanitizedHtml: React.PropTypes.node.isRequired,
-    onChange: React.PropTypes.func,
-  },
-
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return nextProps.sanitizedHtml !== this.refs.this.innerHTML;
-  },
-
-  render: function(): ?ReactElement {
-    this.saveCursorPosition();
-    return (
-      <div ref="this"
-           contentEditable={true}
-           style={{
-             outline: "none",  // Disable onfocus highlighting
-             width: this.props.width,
-             height: this.props.height,
-             overflowY: "auto"
-           }}
-           onInput={this.emitChange}
-           onBlur={this.emitChange} >
-         {/* dangerouslySetInnerHTML={{__html: this.props.sanitizedHtml}}
-             is unnecessary because we are doing it manually inside of
-             componentDidUpdate */}
-      </div>
-    )
-  },
-
-  componentDidUpdate: function() {
-    // React's VDIFF algorithm does not reliably do updates on contenteditable components.
-    // So we have to force an update.
-    if (this.props.sanitizedHtml !== this.refs.this.innerHTML) {
-      this.refs.this.innerHTML = this.props.sanitizedHtml;
-    }
-    this.restoreCursorPosition();
-  },
-
-  saveCursorPosition: function() {
-    if (Rangy.initialized) {
-      var rangySelection = Rangy.getSelection();
-      this.rangyCursorPosition = rangySelection.saveCharacterRanges(this.refs.this);
-    }
-  },
-
-  restoreCursorPosition: function() {
-    if (this.rangyCursorPosition != null) {
-      var rangySelection = Rangy.getSelection();
-      var innerText = Rangy.innerText(this.refs.this);
-      rangySelection.restoreCharacterRanges(this.refs.this, this.rangyCursorPosition);
-      this.rangyCursorPosition = null;
-    }
-  },
-
-  emitChange: function(event: SyntheticEvent) {
-    var html = this.refs.this.innerHTML;
-    if (this.props.onChange) {
-      this.props.onChange(html);
-    }
-  }
-});
 
 var Editor = React.createClass({
 
