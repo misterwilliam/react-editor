@@ -20515,11 +20515,11 @@
 	  },
 	
 	  render: function render() {
-	    return React.createElement('div', { className: 'flex' }, React.createElement('div', { className: 'p1 border' }, React.createElement(ContentEditable, { ref: 'contenteditable',
+	    return React.createElement('div', { className: 'flex' }, React.createElement('div', { className: 'flex flex-column' }, React.createElement('div', { className: 'flex py1' }, React.createElement('div', { className: 'btn btn-outline blue regular' }, 'H1'), React.createElement('div', { className: 'ml1 btn btn-outline blue regular' }, 'H2'), React.createElement('div', { className: 'ml1 btn btn-outline blue regular' }, 'H3'), React.createElement('div', { className: 'flex-auto' }), React.createElement('div', { className: 'ml4 btn btn-outline blue' }, 'Bold'), React.createElement('div', { className: 'ml1 btn btn-outline blue regular italic' }, 'Italic')), React.createElement('div', { className: 'p1 border' }, React.createElement(ContentEditable, { ref: 'contenteditable',
 	      width: 600,
 	      height: 500,
 	      sanitizedHtml: this.state.sanitizedHtml,
-	      onChange: this.handleChange })), React.createElement('div', { className: 'ml4 flex flex-column' }, React.createElement('div', { className: 'h1 bold' }, 'Debug Panel'), React.createElement('div', { className: 'flex-auto p1 border',
+	      onChange: this.handleChange }))), React.createElement('div', { className: 'ml4 flex flex-column' }, React.createElement('div', { className: 'h1 bold' }, 'Debug Panel'), React.createElement('div', { className: 'flex-auto p1 border',
 	      style: {
 	        width: 400,
 	        fontFamily: "courier, monospace",

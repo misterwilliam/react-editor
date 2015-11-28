@@ -18,12 +18,32 @@ var Editor = React.createClass({
   render: function(): ?ReactElement {
     return (
       <div className="flex">
-        <div className="p1 border">
-          <ContentEditable ref="contenteditable"
-                           width={600}
-                           height={500}
-                           sanitizedHtml={this.state.sanitizedHtml}
-                           onChange={this.handleChange} />
+        <div className="flex flex-column">
+          <div className="flex py1">
+            <div className="btn btn-outline blue regular">
+              H1
+            </div>
+            <div className="ml1 btn btn-outline blue regular">
+              H2
+            </div>
+            <div className="ml1 btn btn-outline blue regular">
+              H3
+            </div>
+            <div className="flex-auto">{/* spacer */}</div>
+            <div className="ml4 btn btn-outline blue">
+              Bold
+            </div>
+            <div className="ml1 btn btn-outline blue regular italic">
+              Italic
+            </div>
+          </div>
+          <div className="p1 border">
+            <ContentEditable ref="contenteditable"
+                             width={600}
+                             height={500}
+                             sanitizedHtml={this.state.sanitizedHtml}
+                             onChange={this.handleChange} />
+          </div>
         </div>
         <div className="ml4 flex flex-column">
           <div className="h1 bold">Debug Panel</div>
@@ -57,7 +77,7 @@ var Editor = React.createClass({
       preSanitizedHtml: html,
       sanitizedHtml: sanitizer.Sanitize(html),
     });
-  }
+  },
 });
 
 module.exports = Editor;
