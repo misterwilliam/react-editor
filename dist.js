@@ -20503,7 +20503,7 @@
 	
 	var sanitizer = __webpack_require__(/*! ./sanitizer */ 164);
 	
-	var ContentEditable = __webpack_require__(/*! ./contenteditable.react */ 229);
+	var ContentEditable = __webpack_require__(/*! ./contenteditable.react */ 226);
 	
 	var Editor = React.createClass({
 	  displayName: 'Editor',
@@ -33662,6 +33662,95 @@
 
 /***/ },
 /* 226 */
+/*!**********************************!*\
+  !*** ./contenteditable.react.js ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Rangy = __webpack_require__(/*! rangy */ 227);
+	
+	var RangyTextRange = __webpack_require__(/*! rangy/lib/rangy-textrange */ 228);
+	var React = __webpack_require__(/*! react */ 1);
+	
+	// Implements a contenteditable div as a React component. Contents of the div are passed
+	// in through props.sanitizedHtml. Cursor position saving does not work correctly if the
+	// contents passed in are not wrapped in a div.
+	
+	// Implementation notes: We need to save the cursor position because after the contents
+	// are updated in the render function the cursor position is lost. So we need to save and
+	// restore it. Cursor position saving is accomplished by using Rangy's innerText offset
+	// based cursor position saving. innerText is a non-standard Node property that roughly
+	// translates to the text on the screen stripped of formatting. We need to save the cursor
+	// position by saving the innerText offset because after onChange emits changes it is can
+	// be mutated by sanitization and canonicalization before being repassed in through props.
+	
+	var ContentEditable = React.createClass({
+	  displayName: 'ContentEditable',
+	
+	  rangyCursorPosition: null,
+	
+	  propTypes: {
+	    sanitizedHtml: React.PropTypes.node.isRequired,
+	    onChange: React.PropTypes.func
+	  },
+	
+	  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+	    return nextProps.sanitizedHtml !== this.refs.this.innerHTML;
+	  },
+	
+	  render: function render() {
+	    this.saveCursorPosition();
+	    return React.createElement('div', { ref: 'this',
+	      contentEditable: true,
+	      style: {
+	        outline: "none", // Disable onfocus highlighting
+	        width: this.props.width,
+	        height: this.props.height,
+	        overflowY: "auto"
+	      },
+	      onInput: this.emitChange,
+	      onBlur: this.emitChange });
+	  },
+	
+	  componentDidUpdate: function componentDidUpdate() {
+	    // React's VDIFF algorithm does not reliably do updates on contenteditable components.
+	    // So we have to force an update.
+	    if (this.props.sanitizedHtml !== this.refs.this.innerHTML) {
+	      this.refs.this.innerHTML = this.props.sanitizedHtml;
+	    }
+	    this.restoreCursorPosition();
+	  },
+	
+	  saveCursorPosition: function saveCursorPosition() {
+	    if (Rangy.initialized) {
+	      var rangySelection = Rangy.getSelection();
+	      this.rangyCursorPosition = rangySelection.saveCharacterRanges(this.refs.this);
+	    }
+	  },
+	
+	  restoreCursorPosition: function restoreCursorPosition() {
+	    if (this.rangyCursorPosition != null) {
+	      var rangySelection = Rangy.getSelection();
+	      var innerText = Rangy.innerText(this.refs.this);
+	      rangySelection.restoreCharacterRanges(this.refs.this, this.rangyCursorPosition);
+	      this.rangyCursorPosition = null;
+	    }
+	  },
+	
+	  emitChange: function emitChange(event) {
+	    var html = this.refs.this.innerHTML;
+	    if (this.props.onChange) {
+	      this.props.onChange(html);
+	    }
+	  }
+	});
+	
+	module.exports = ContentEditable;
+
+/***/ },
+/* 227 */
 /*!***********************************!*\
   !*** ./~/rangy/lib/rangy-core.js ***!
   \***********************************/
@@ -37514,7 +37603,6 @@
 	}, this);
 
 /***/ },
-/* 227 */,
 /* 228 */
 /*!****************************************!*\
   !*** ./~/rangy/lib/rangy-textrange.js ***!
@@ -37589,7 +37677,7 @@
 	(function(factory, root) {
 	    if (true) {
 	        // AMD. Register as an anonymous module with a dependency on Rangy.
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! ./rangy-core */ 226)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! ./rangy-core */ 227)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module != "undefined" && typeof exports == "object") {
 	        // Node/CommonJS style
 	        module.exports = factory( require("rangy") );
@@ -39451,95 +39539,6 @@
 	    
 	    return rangy;
 	}, this);
-
-/***/ },
-/* 229 */
-/*!**********************************!*\
-  !*** ./contenteditable.react.js ***!
-  \**********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var Rangy = __webpack_require__(/*! rangy */ 226);
-	
-	var RangyTextRange = __webpack_require__(/*! rangy/lib/rangy-textrange */ 228);
-	var React = __webpack_require__(/*! react */ 1);
-	
-	// Implements a contenteditable div as a React component. Contents of the div are passed
-	// in through props.sanitizedHtml. Cursor position saving does not work correctly if the
-	// contents passed in are not wrapped in a div.
-	
-	// Implementation notes: We need to save the cursor position because after the contents
-	// are updated in the render function the cursor position is lost. So we need to save and
-	// restore it. Cursor position saving is accomplished by using Rangy's innerText offset
-	// based cursor position saving. innerText is a non-standard Node property that roughly
-	// translates to the text on the screen stripped of formatting. We need to save the cursor
-	// position by saving the innerText offset because after onChange emits changes it is can
-	// be mutated by sanitization and canonicalization before being repassed in through props.
-	
-	var ContentEditable = React.createClass({
-	  displayName: 'ContentEditable',
-	
-	  rangyCursorPosition: null,
-	
-	  propTypes: {
-	    sanitizedHtml: React.PropTypes.node.isRequired,
-	    onChange: React.PropTypes.func
-	  },
-	
-	  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-	    return nextProps.sanitizedHtml !== this.refs.this.innerHTML;
-	  },
-	
-	  render: function render() {
-	    this.saveCursorPosition();
-	    return React.createElement('div', { ref: 'this',
-	      contentEditable: true,
-	      style: {
-	        outline: "none", // Disable onfocus highlighting
-	        width: this.props.width,
-	        height: this.props.height,
-	        overflowY: "auto"
-	      },
-	      onInput: this.emitChange,
-	      onBlur: this.emitChange });
-	  },
-	
-	  componentDidUpdate: function componentDidUpdate() {
-	    // React's VDIFF algorithm does not reliably do updates on contenteditable components.
-	    // So we have to force an update.
-	    if (this.props.sanitizedHtml !== this.refs.this.innerHTML) {
-	      this.refs.this.innerHTML = this.props.sanitizedHtml;
-	    }
-	    this.restoreCursorPosition();
-	  },
-	
-	  saveCursorPosition: function saveCursorPosition() {
-	    if (Rangy.initialized) {
-	      var rangySelection = Rangy.getSelection();
-	      this.rangyCursorPosition = rangySelection.saveCharacterRanges(this.refs.this);
-	    }
-	  },
-	
-	  restoreCursorPosition: function restoreCursorPosition() {
-	    if (this.rangyCursorPosition != null) {
-	      var rangySelection = Rangy.getSelection();
-	      var innerText = Rangy.innerText(this.refs.this);
-	      rangySelection.restoreCharacterRanges(this.refs.this, this.rangyCursorPosition);
-	      this.rangyCursorPosition = null;
-	    }
-	  },
-	
-	  emitChange: function emitChange(event) {
-	    var html = this.refs.this.innerHTML;
-	    if (this.props.onChange) {
-	      this.props.onChange(html);
-	    }
-	  }
-	});
-	
-	module.exports = ContentEditable;
 
 /***/ }
 /******/ ]);
