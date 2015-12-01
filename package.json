@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "A simple contenteditable based rich text editor react component.",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-jest": "^6.0.1",
+    "jest-cli": "^0.8.0",
+    "jest-webpack-alias": "^2.0.0"
+  },
   "scripts": {
     "build": "webpack",
     "watch": "webpack --progress --colors --watch -d",
-    "test": "jasmine"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -32,5 +36,8 @@
     "sanitize-html": "^1.11.1",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.8"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/jest/preprocessor.js"
   }
 }
