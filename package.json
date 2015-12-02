@@ -28,6 +28,7 @@
     "babel-preset-react": "^6.1.18",
     "basscss": "^7.0.4",
     "css-loader": "^0.23.0",
+    "htmlparser2": "^3.9.0",
     "json-loader": "^0.5.3",
     "rangy": "^1.3.0",
     "sanitize-html": "^1.11.1",
@@ -35,6 +36,10 @@
     "webpack": "^1.12.8"
   },
   "jest": {
-    "scriptPreprocessor": "<rootDir>/jest/preprocessor.js"
+    "scriptPreprocessor": "<rootDir>/jest/preprocessor.js",
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/htmlparser2",
+      "<rootDir>/node_modules/react"
+    ]
   }
 }

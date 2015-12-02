@@ -11,6 +11,7 @@ var Editor = React.createClass({
 
   getInitialState: function() {
     return {
+      preSanitizedHtml: "",
       sanitizedHtml: "<div></div>",
     }
   },
