@@ -37,11 +37,19 @@ class ElementNode extends Node {
   }
 
   toString(): string {
-    var result = "<" + this.tagname + ">";
+    var result = "<" + this.tagname + this.attribsToString() + ">";
     for (var i = 0; i < this.childNodes.length; i++) {
       result += this.childNodes[i].toString();
     }
     result += "</" + this.tagname + ">";
+    return result;
+  }
+
+  attribsToString(): string {
+    var result = "";
+    _.forEach(this.attribs, (value, key) => {
+      result += " " + key + "=\"" + value + "\"";
+    })
     return result;
   }
 }
