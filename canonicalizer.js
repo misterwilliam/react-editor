@@ -1,6 +1,7 @@
 /* @flow */
 "use strict";
 
+var _ = require('lodash');
 var htmlparser = require("htmlparser2");
 
 class Node {
@@ -59,11 +60,29 @@ class TextNode extends Node {
   }
 }
 
-function CanMergeNodes(parentNode, childNode): bool {
-  return parentNode instanceof ElementNode &&
-    childNode instanceof ElementNode &&
-    parentNode.tagname === childNode.tagname &&
-    parentNode.attribs == childNode.attribs;
+function GetSoleChild(node: Node): ?Node {
+  if (node.childNodes.length == 1) {
+    return node.childNodes[0];
+  }
+  return null;
+}
+
+function MaybeCollapseNode(node: Node) {
+  var soleChild = GetSoleChild(node);
+  if (soleChild != null) {
+    if (node instanceof ElementNode &&
+        soleChild instanceof ElementNode) {
+      var matchingTag = node.tagname === soleChild.tagname;
+      var matchingAttribs = _.isEqual(node.attribs, soleChild.attribs);
+      if (matchingTag && matchingAttribs) {
+        CollapseNode(node);
+      }
+    }
+  }
+}
+
+function CollapseNode(node: Node) {
+  node.childNodes = node.childNodes[0].childNodes;
 }
 
 var Canonicalize = function(html: string): string {
@@ -83,9 +102,12 @@ var Canonicalize = function(html: string): string {
     },
     onclosetag: function(tagname) {
       var node = stack.pop();
+      MaybeCollapseNode(node);
     },
     onend: function() {
-      result = stack.pop().toString();
+      var node = stack.pop();
+      MaybeCollapseNode(node);
+      result = node.toString();
     }
   }, {decodeEntities: true});
   parser.write(html);

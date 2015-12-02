@@ -30,6 +30,7 @@
     "css-loader": "^0.23.0",
     "htmlparser2": "^3.9.0",
     "json-loader": "^0.5.3",
+    "lodash": "^3.10.1",
     "rangy": "^1.3.0",
     "sanitize-html": "^1.11.1",
     "style-loader": "^0.13.0",
@@ -39,6 +40,7 @@
     "scriptPreprocessor": "<rootDir>/jest/preprocessor.js",
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/htmlparser2",
+      "<rootDir>/node_modules/lodash",
       "<rootDir>/node_modules/react"
     ]
   }
